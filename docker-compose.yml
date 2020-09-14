@@ -1,0 +1,27 @@
+version: "3"
+services:
+  postgres:
+    image: postgres
+    container_name: postgres
+    volumes:
+      - ./docker/db/data:/var/lib/postgres/data
+    environment:
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DATABASE=root
+      - POSTGRES_HOST=postgres
+    ports:
+      - "3306:3306"
+
+  rails:
+    container_name: rails
+    build:
+      context: .
+      dockerfile: ./docker/rails/Dockerfile
+    volumes:
+      - .:/var/www
+    ports:
+      - "3000:3000"
+    links:
+      - postgres
+    tty: true
+    stdin_open: true

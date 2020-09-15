@@ -6,22 +6,25 @@ services:
     volumes:
       - ./docker/db/data:/var/lib/postgres/data
     environment:
+      - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-      - POSTGRES_DATABASE=root
-      - POSTGRES_HOST=postgres
     ports:
-      - "3306:3306"
+      - "5432:5432"
 
-  rails:
-    container_name: rails
+  web:
+    container_name: web
     build:
       context: .
       dockerfile: ./docker/rails/Dockerfile
     volumes:
       - .:/var/www
+      - ./bundle:/usr/local/bundle
     ports:
       - "3000:3000"
     links:
       - postgres
     tty: true
     stdin_open: true
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root

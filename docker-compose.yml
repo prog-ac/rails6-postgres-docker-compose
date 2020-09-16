@@ -4,10 +4,11 @@ services:
     image: postgres
     container_name: postgres
     volumes:
-      - ./docker/db/data:/var/lib/postgres/data
+      - ./pgdata:/var/lib/postgresql/data:cached
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=postgres
     ports:
       - "5432:5432"
 
@@ -15,10 +16,14 @@ services:
     container_name: web
     build:
       context: .
-      dockerfile: ./docker/rails/Dockerfile
+      dockerfile: ./Dockerfile
     volumes:
-      - .:/var/www
-      - ./bundle:/usr/local/bundle
+      - .:/app:cached
+      - ./bundle:/usr/local/bundle:cached
+      - /app/vendor
+      - /app/tmp
+      - /app/log
+      - /app/.git
     ports:
       - "3000:3000"
     links:
@@ -26,5 +31,11 @@ services:
     tty: true
     stdin_open: true
     environment:
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_HOST=postgres
+volumes:
+  bundle:
+    driver: local
+  pgdata:
+    driver: local
